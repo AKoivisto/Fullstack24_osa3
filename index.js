@@ -59,10 +59,34 @@ app.get('/', (request, response) => {
   })
 
   app.post('/api/persons', (request, response) => {
-    const new_id = Math.floor(500*Math.random())
-    const person = request.body
-    person.id = String(new_id)
+    const new_id = String(Math.floor(500*Math.random()))
+    const body = request.body
 
+    if (!body.name ) { 
+        return response.status(400).json({ 
+        error: 'missing name!' 
+      })
+    }
+
+    if (!body.number) { 
+        return response.status(400).json({ 
+        error: 'missing number!' 
+      })
+    }
+
+    const personunique = persons.find(person => person.name === body.name) 
+    if (personunique) {    
+        return response.status(400).json({
+            error: `${body.name} is already in the phonebook`
+        })
+    }
+
+    const person = {
+        id: new_id,
+        name: body.name,
+        number: body.number
+    }
+    
     persons = persons.concat(person)
     console.log(person)
     response.json(person)
