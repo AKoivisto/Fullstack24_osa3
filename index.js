@@ -59,7 +59,11 @@ app.get('/', (request, response) => {
   })
 
   app.post('/api/persons', (request, response) => {
+    const new_id = Math.floor(500*Math.random())
     const person = request.body
+    person.id = String(new_id)
+
+    persons = persons.concat(person)
     console.log(person)
     response.json(person)
   })
