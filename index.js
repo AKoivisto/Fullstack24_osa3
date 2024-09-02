@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+const morgan = require('morgan')
 
 let persons = [
     {
@@ -25,6 +26,9 @@ let persons = [
 ]
 
 app.use(express.json())
+var morgan_end = ""
+morgan.token('data', () => JSON.stringify(morgan_end))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
 
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
@@ -52,6 +56,7 @@ app.get('/', (request, response) => {
   })
 
   app.delete('/api/persons/:id', (request, response) => {
+    
     const id = request.params.id
     persons = persons.filter(person => person.id !== id)
   
@@ -61,6 +66,7 @@ app.get('/', (request, response) => {
   app.post('/api/persons', (request, response) => {
     const new_id = String(Math.floor(500*Math.random()))
     const body = request.body
+    morgan_end = request.body
 
     if (!body.name ) { 
         return response.status(400).json({ 
