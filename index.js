@@ -3,8 +3,10 @@ const app = express()
 const morgan = require('morgan')
 const cors = require('cors')
 
+
 app.use(express.json())
 app.use(cors())
+app.use(express.static('dist'))
 var morgan_end = ""
 morgan.token('data', () => JSON.stringify(morgan_end))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
