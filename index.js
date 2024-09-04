@@ -86,11 +86,14 @@ const unknownEndpoint = (request, response) => {
       .catch(error => next(error))
   })
 
-  // app.get('/info', (request, response) => {
-  //   const personCount = persons.length
-  //   response.send(`<p>Phonebook has info for ${personCount} people</p> <br>
-  //       <p>${new Date()}</p>`)
-  // })
+  app.get('/info', (request, response) => {
+    Contact.find({}).then(contacts => {
+      const personCount = contacts.length
+      response.send(`<p>Phonebook has info for ${personCount} people</p> <br>
+        <p>${new Date()}</p>`)
+    })
+
+  })
 
   app.delete('/api/persons/:id', (request, response, next) => {
     Contact.findByIdAndDelete(request.params.id)
