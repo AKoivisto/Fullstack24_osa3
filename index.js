@@ -11,17 +11,17 @@ app.post('/api/persons', (request, response, next) => {
   const body = request.body
   morgan_end = request.body
 
-  if (body.name === undefined) { 
-      return response.status(400).json({ 
-      error: 'missing name!' 
-    })
-  }
+  // if (body.name === undefined) { 
+  //     return response.status(400).json({ 
+  //     error: 'missing name!' 
+  //   })
+  // }
 
-  if (!body.number === undefined) { 
-      return response.status(400).json({ 
-      error: 'missing number!' 
-    })
-  }
+  // if (!body.number === undefined) { 
+  //     return response.status(400).json({ 
+  //     error: 'missing number!' 
+  //   })
+  // }
 
   const contact = new Contact({
     name: body.name,
