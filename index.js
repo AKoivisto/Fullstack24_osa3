@@ -7,7 +7,7 @@ app.use(express.static('dist'))
 
 app.use(express.json())
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
   morgan_end = request.body
 
@@ -28,24 +28,10 @@ app.post('/api/persons', (request, response) => {
     number: body.number,
   })
 
-  // const personunique = persons.find(person => person.name === body.name) 
-  // if (personunique) {    
-  //     return response.status(400).json({
-  //         error: `${body.name} is already in the phonebook`
-  //     })
-  // }
-
-  // const person = {
-  //     id: new_id,
-  //     name: body.name,
-  //     number: body.number
-  // }
-  
-  // persons = persons.concat(person)
-  // console.log(person)
   contact.save().then(savedContact => {
     response.json(savedContact)
   })
+  .catch(error => next(error))
 
 })
 
@@ -53,6 +39,8 @@ const errorHandler = (error, request, response, next) => {
   console.error(error.message)
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
   next(error)
 }
