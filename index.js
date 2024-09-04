@@ -1,8 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
 const cors = require('cors')
-
+const Contact = require('./models/contact')
 
 app.use(express.json())
 app.use(cors())
@@ -36,23 +37,39 @@ let persons = [
 ]
 
 
+// mongoose.set('strictQuery',false)
+// mongoose.connect(url)
+
+// const contactSchema = new mongoose.Schema({
+//   name: String,
+//   number: String,
+// })
+
+
+// const Contact = mongoose.model('Contact', noteSchema)
+
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
   })
   
   app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Contact.find({}).then(contacts => {
+      response.json(contacts)
+    })
   })
 
   app.get('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    const person = persons.find(person => person.id === id)
+    Contact.findById(request.params.id).then(contact => {
+      response.json(contact)
+    })
+    // const id = request.params.id
+    // const person = persons.find(person => person.id === id)
 
-    if (person) {
-        response.json(person)
-    } else {
-        response.status(404).end()
-    }
+    // if (person) {
+    //     response.json(person)
+    // } else {
+    //     response.status(404).end()
+    // }
   })
 
   app.get('/info', (request, response) => {
@@ -74,37 +91,45 @@ app.get('/', (request, response) => {
     const body = request.body
     morgan_end = request.body
 
-    if (!body.name ) { 
+    if (body.name === undefined) { 
         return response.status(400).json({ 
         error: 'missing name!' 
       })
     }
 
-    if (!body.number) { 
+    if (!body.number === undefined) { 
         return response.status(400).json({ 
         error: 'missing number!' 
       })
     }
 
-    const personunique = persons.find(person => person.name === body.name) 
-    if (personunique) {    
-        return response.status(400).json({
-            error: `${body.name} is already in the phonebook`
-        })
-    }
+    const contact = new Contact({
+      name: body.name,
+      number: body.number,
+    })
 
-    const person = {
-        id: new_id,
-        name: body.name,
-        number: body.number
-    }
+    // const personunique = persons.find(person => person.name === body.name) 
+    // if (personunique) {    
+    //     return response.status(400).json({
+    //         error: `${body.name} is already in the phonebook`
+    //     })
+    // }
+
+    // const person = {
+    //     id: new_id,
+    //     name: body.name,
+    //     number: body.number
+    // }
     
-    persons = persons.concat(person)
-    console.log(person)
-    response.json(person)
+    // persons = persons.concat(person)
+    // console.log(person)
+    contact.save().then(savedContact => {
+      response.json(savedContact)
+    })
+
   })
   
-  const PORT = process.env.PORT || 3001
+  const PORT = process.env.PORT
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
   })
